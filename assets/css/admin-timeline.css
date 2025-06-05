@@ -1,0 +1,97 @@
+/* assets/css/admin-timeline.css */
+
+/* Estilos para as metaboxes e campos */
+#wtp_timeline_settings_metabox .small-text {
+    width: 80px;
+}
+#wtp_timeline_settings_metabox .form-table th {
+    width: 200px; /* Largura para os labels */
+    padding-right: 20px;
+}
+#wtp_timeline_settings_metabox .form-table td {
+    vertical-align: top;
+}
+
+.wtp-shortcode-input {
+    background-color: #f0f0f0;
+    color: #333;
+    cursor: copy;
+}
+
+/* Estilos para o gerenciador de itens AJAX */
+#wtp-timeline-items-list-container {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: #fdfdfd;
+    border: 1px solid #e5e5e5;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.wtp-styled-list {
+    list-style: none;
+    padding-left: 0;
+}
+.wtp-styled-list li {
+    padding: 8px 10px;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.wtp-styled-list li:last-child {
+    border-bottom: none;
+}
+.wtp-styled-list li strong {
+    margin-right: 10px;
+}
+.wtp-styled-list li small {
+    color: #777;
+    margin-right: auto; /* Empurra os botões para a direita */
+    padding-left: 10px;
+}
+.wtp-styled-list li .button {
+    margin-left: 5px;
+}
+.wtp-styled-list li .button-link-delete {
+    color: #a00;
+    border-color: transparent;
+    background: none;
+    box-shadow: none;
+    padding: 0 3px;
+}
+.wtp-styled-list li .button-link-delete:hover {
+    color: #dc3232;
+    border-color: transparent;
+    background: none;
+    box-shadow: none;
+}
+
+
+#wtp-add-item-form th {
+    width: 150px; /* Ajuste conforme necessário */
+}
+#wtp-add-item-form .spinner {
+    margin-left: 10px;
+}
+#wtp-no-items-message {
+    padding: 15px;
+    text-align: center;
+    color: #777;
+}
+
+/* Estilos para Select2 (se necessário para sobrescrever) */
+.select2-container .select2-selection--single {
+    height: 30px; /* Altura padrão do WordPress */
+}
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 28px;
+}
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 28px;
+}
+
+/* Melhorar a aparência do spinner */
+#wtp-add-item-form .spinner.is-active {
+    visibility: visible; /* Garante que o spinner seja visível */
+}

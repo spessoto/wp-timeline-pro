@@ -1,0 +1,174 @@
+/* assets/css/frontend-timeline.css */
+
+.wtp-timeline-container {
+    position: relative;
+    margin: 30px auto;
+    padding: 20px 0;
+    max-width: 90%;
+    box-sizing: border-box;
+}
+
+.wtp-timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background-color: #ccc;
+    margin-left: -2px;
+    z-index: 1;
+}
+
+.wtp-timeline-items {
+    position: relative;
+}
+
+.wtp-timeline-item {
+    position: relative;
+    margin-bottom: 40px;
+    width: 50%;
+    box-sizing: border-box;
+    z-index: 2;
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out, transform 0.5s ease-in-out;
+}
+
+.wtp-timeline-item.wtp-item-visible {
+    opacity: 1;
+}
+
+/* Animações (conforme definido anteriormente) */
+.wtp-timeline-item.fade-in { opacity: 0; }
+.wtp-timeline-item.wtp-item-visible.fade-in { opacity: 1; }
+.wtp-timeline-item.slide-in-left { opacity: 0; transform: translateX(-50px); }
+.wtp-timeline-item.wtp-item-left.slide-in-left.wtp-item-visible,
+.wtp-timeline-item.wtp-item-right.slide-in-left.wtp-item-visible { opacity: 1; transform: translateX(0); }
+.wtp-timeline-item.slide-in-right { opacity: 0; transform: translateX(50px); }
+.wtp-timeline-item.wtp-item-right.slide-in-right.wtp-item-visible,
+.wtp-timeline-item.wtp-item-left.slide-in-right.wtp-item-visible { opacity: 1; transform: translateX(0); }
+.wtp-timeline-item.slide-in-up { opacity: 0; transform: translateY(50px); }
+.wtp-timeline-item.slide-in-up.wtp-item-visible { opacity: 1; transform: translateY(0); }
+.wtp-timeline-item.zoom-in { opacity: 0; transform: scale(0.8); }
+.wtp-timeline-item.zoom-in.wtp-item-visible { opacity: 1; transform: scale(1); }
+
+.wtp-timeline-item.wtp-item-left {
+    left: 0;
+    padding-right: 40px;
+    text-align: right;
+}
+.wtp-timeline-item.wtp-item-right {
+    left: 50%;
+    padding-left: 40px;
+    text-align: left;
+}
+
+.wtp-timeline-item-marker {
+    position: absolute;
+    top: 15px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 4px solid #ccc;
+    z-index: 3;
+}
+.wtp-timeline-item.wtp-item-left .wtp-timeline-item-marker { right: -11px; }
+.wtp-timeline-item.wtp-item-right .wtp-timeline-item-marker { left: -11px; }
+
+.wtp-timeline-item-content { position: relative; }
+
+.wtp-timeline-item-content-inner {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 6px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.wtp-timeline-item-year {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #555;
+}
+.wtp-timeline-item-title {
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: 0;
+    margin-bottom: 10px;
+    color: #222;
+}
+.wtp-timeline-item-description p:last-child { margin-bottom: 0; }
+
+/* Setas dos balões (só se tiver card) */
+.wtp-timeline-item:not(.wtp-item-no-card).wtp-item-left .wtp-timeline-item-content-inner::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    right: -10px;
+    border-style: solid;
+    border-width: 10px 0 10px 10px;
+    border-color: transparent transparent transparent #f9f9f9; /* Cor do fundo do card */
+}
+.wtp-timeline-item:not(.wtp-item-no-card).wtp-item-right .wtp-timeline-item-content-inner::after {
+    content: '';
+    position: absolute;
+    top: 20px;
+    left: -10px;
+    border-style: solid;
+    border-width: 10px 10px 10px 0;
+    border-color: transparent #f9f9f9 transparent transparent; /* Cor do fundo do card */
+}
+
+/* Estilos para o modo "Sem Card" */
+.wtp-timeline-container.wtp-no-card-format .wtp-timeline-item-content-inner {
+    background-color: transparent;
+    padding: 0; /* Ou um padding menor se desejado */
+    box-shadow: none;
+    border-radius: 0;
+}
+/* Esconder as setas no modo "sem card" já está coberto pela lógica acima que só adiciona ::after a :not(.wtp-item-no-card) */
+/* Se o item não tiver título, pode ser necessário ajustar margens */
+.wtp-timeline-item-title + .wtp-timeline-item-description {
+    /* Mantém a margem padrão se o título existir */
+}
+.wtp-timeline-item-year + .wtp-timeline-item-description:not(:has(.wtp-timeline-item-title)) {
+    /* Ajuste se o ano for seguido diretamente pela descrição sem título */
+    margin-top: 5px; /* Exemplo */
+}
+
+
+/* Responsividade */
+@media screen and (max-width: 768px) {
+    .wtp-timeline-line {
+        left: 20px;
+        margin-left: 0;
+    }
+    .wtp-timeline-item,
+    .wtp-timeline-item.wtp-item-left,
+    .wtp-timeline-item.wtp-item-right {
+        width: 100%;
+        left: 0;
+        padding-left: 50px;
+        padding-right: 15px;
+        text-align: left;
+    }
+    .wtp-timeline-item.wtp-item-left.slide-in-right,
+    .wtp-timeline-item.wtp-item-right.slide-in-right { transform: translateX(-50px); }
+    .wtp-timeline-item.wtp-item-left.slide-in-right.wtp-item-visible,
+    .wtp-timeline-item.wtp-item-right.slide-in-right.wtp-item-visible { transform: translateX(0); }
+
+    .wtp-timeline-item.wtp-item-left .wtp-timeline-item-marker,
+    .wtp-timeline-item.wtp-item-right .wtp-timeline-item-marker { left: 9px; }
+
+    .wtp-timeline-item:not(.wtp-item-no-card).wtp-item-left .wtp-timeline-item-content-inner::after,
+    .wtp-timeline-item:not(.wtp-item-no-card).wtp-item-right .wtp-timeline-item-content-inner::after {
+        left: -10px;
+        right: auto;
+        border-style: solid;
+        border-width: 10px 10px 10px 0;
+        border-color: transparent #f9f9f9 transparent transparent;
+    }
+}
+
+.wtp-error { color: red; font-weight: bold; padding: 10px; border: 1px solid red; background-color: #ffe0e0; }
+.wtp-notice { color: #555; padding: 10px; border: 1px solid #ddd; background-color: #f9f9f9; }
