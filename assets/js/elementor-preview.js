@@ -3,11 +3,11 @@
     var WtpElementorPreview = {
 
         /**
-         * Função Debounce para limitar a frequência com que uma função pode ser executada.
-         * @param {function} func - A função a ser "debounced".
-         * @param {number} wait - O tempo de espera em milissegundos.
-         * @param {boolean} immediate - Se true, executa a função no início do período de espera.
-         * @returns {function} A nova função "debounced".
+         * Debounce function to limit the frequency with which a function can be executed.
+         * @param {function} func - The function to be debounced.
+         * @param {number} wait - The wait time in milliseconds.
+         * @param {boolean} immediate - If true, executes the function at the beginning of the wait period.
+         * @returns {function} The new debounced function.
          */
         debounce: function(func, wait, immediate) {
             var timeout;
@@ -25,25 +25,25 @@
         },
 
         /**
-         * Busca e renderiza a pré-visualização da timeline.
-         * @param {object} widgetView - A view do widget Elementor.
+         * Fetches and renders the timeline preview.
+         * @param {object} widgetView - The Elementor widget view.
          */
         fetchPreview: function(widgetView) {
-            // Obtém o ID da timeline selecionada e o ID do elemento do widget
+            // Get the selected timeline ID and the widget element ID
             var timelineId = widgetView.model.get('settings').get('selected_timeline_id');
             var elementId = widgetView.getID();
             var $previewContainer = widgetView.$el.find('.wtp-elementor-timeline-preview[data-element-id="' + elementId + '"]');
 
-            // Se nenhuma timeline estiver selecionada, exibe um aviso
+            // If no timeline is selected, display a warning
             if (!timelineId) {
                 $previewContainer.html('<div class="elementor-alert elementor-alert-warning">' + wtp_elementor_preview_vars.i18n.select_timeline + '</div>');
                 return;
             }
 
-            // Mostra o loader enquanto a pré-visualização é carregada
+            // Show loader while the preview is loading
             $previewContainer.html('<div class="elementor-loader-wrapper"><div class="elementor-loader"><div class="elementor-loader-box"></div><div class="elementor-loader-box"></div><div class="elementor-loader-box"></div><div class="elementor-loader-box"></div></div></div><p style="text-align:center;">' + wtp_elementor_preview_vars.i18n.loading_preview + '</p>');
 
-            // Coleta todas as configurações e extrai apenas as relevantes para substituição de estilo
+            // Collect all settings and extract only those relevant for style override
             var allSettings = widgetView.model.get('settings').toJSON();
             var relevantSettings = {};
             for (var key in allSettings) {
@@ -52,7 +52,7 @@
                 }
             }
 
-            // Requisição AJAX para buscar o HTML da timeline renderizado
+            // AJAX request to fetch the rendered timeline HTML
             $.ajax({
                 url: wtp_elementor_preview_vars.ajax_url,
                 type: 'POST',
@@ -60,56 +60,56 @@
                     action: 'wtp_get_elementor_preview',
                     nonce: wtp_elementor_preview_vars.nonce,
                     timeline_id: timelineId,
-                    elementor_settings: JSON.stringify(relevantSettings) // Envia apenas as configurações relevantes
+                    elementor_settings: JSON.stringify(relevantSettings) // Send only relevant settings
                 },
                 success: function(response) {
                     if (response.success && response.data.html) {
                         $previewContainer.html(response.data.html);
-                        // Dispara um evento para que outros scripts (ex: animações) possam re-inicializar
+                        // Trigger an event so other scripts (e.g., animations) can re-initialize
                         $(document).trigger('wtpElementorPreviewRendered', [$previewContainer]);
 
-                        // Tenta forçar o Elementor a recalcular o layout
+                        // Try to force Elementor to recalculate the layout
                         if (typeof elementorFrontend !== 'undefined' && typeof elementorFrontend.elements !== 'undefined' && typeof elementorFrontend.elements.$window !== 'undefined') {
                             elementorFrontend.elements.$window.trigger('resize');
                         }
                     } else {
-                        // Exibe mensagem de erro se a resposta AJAX não for bem-sucedida
+                        // Display error message if AJAX response is not successful
                         var errorMessage = response.data && response.data.message ? response.data.message : wtp_elementor_preview_vars.i18n.error_loading_preview;
                         $previewContainer.html('<div class="elementor-alert elementor-alert-danger">' + errorMessage + '</div>');
                     }
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
-                    // Exibe mensagem de erro em caso de falha na requisição AJAX
+                    // Display error message in case of AJAX request failure
                     $previewContainer.html('<div class="elementor-alert elementor-alert-danger">' + wtp_elementor_preview_vars.i18n.ajax_error + ': ' + errorThrown + '</div>');
                 }
             });
         }
     };
 
-    // Inicializa a lógica de pré-visualização quando o frontend do Elementor estiver pronto
+    // Initialize preview logic when Elementor frontend is ready
     $(window).on('elementor/frontend/init', function() {
         if (typeof elementorFrontend === 'undefined' || typeof elementorFrontend.hooks === 'undefined') {
-            console.warn('WP Timeline Pro: Hooks do frontend do Elementor não disponíveis para pré-visualização.');
+            console.warn('WP Timeline Pro: Elementor frontend hooks not available for preview.');
             return;
         }
 
-        // Adiciona uma ação para quando o widget 'wtp_timeline' estiver pronto no editor
+        // Add an action for when the 'wtp_timeline' widget is ready in the editor
         elementorFrontend.hooks.addAction('frontend/element_ready/wtp_timeline.default', function($scope, $) {
-            var widgetView = $scope.data('elementor-elements-handler'); // Método primário para obter a view
+            var widgetView = $scope.data('elementor-elements-handler'); // Primary method to get the view
 
-            // Fallback para obter a view do widget, se o método primário falhar
+            // Fallback to get the widget view, if the primary method fails
             if (!widgetView) {
                  if (typeof elementorFrontend.elements !== 'undefined' && typeof elementorFrontend.elements.views !== 'undefined' && $scope.data('model-cid')) {
                     widgetView = elementorFrontend.elements.views.findByModelCID($scope.data('model-cid'));
                 }
             }
             
-            // Se a view do widget não puder ser obtida, registra um aviso e tenta uma carga inicial com mock
+            // If the widget view cannot be obtained, log a warning and try an initial load with a mock
             if (!widgetView) {
-                console.warn('WP Timeline Pro: Não foi possível obter a view do widget para pré-visualização AJAX.', $scope);
+                console.warn('WP Timeline Pro: Could not get widget view for AJAX preview.', $scope);
                 var initialTimelineId = $scope.find('.wtp-elementor-timeline-preview').data('timeline-id');
                 if (initialTimelineId) {
-                    // Simula uma view básica para a chamada inicial
+                    // Simulate a basic view for the initial call
                     var mockView = {
                         model: { get: function() { return { get: function(key) { return key === 'selected_timeline_id' ? initialTimelineId : ''; }, toJSON: function() { return { selected_timeline_id: initialTimelineId }; } }; } },
                         getID: function() { return $scope.find('.wtp-elementor-timeline-preview').data('element-id'); },
@@ -120,26 +120,26 @@
                 return;
             }
 
-            // Cria uma função "debounced" para buscar a pré-visualização, limitando chamadas excessivas
+            // Create a debounced function to fetch the preview, limiting excessive calls
             var debouncedFetchPreview = WtpElementorPreview.debounce(function() {
                 WtpElementorPreview.fetchPreview(widgetView);
-            }, 500); // Atraso de 500ms
+            }, 500); // 500ms delay
 
-            // Renderiza a pré-visualização na carga inicial do widget
+            // Render the preview on initial widget load
             debouncedFetchPreview();
 
-            // Escuta por mudanças nas configurações do modelo do widget
+            // Listen for changes in the widget model's settings
             widgetView.model.on('change', function(model) {
                 var changedAttributes = model.changedAttributes();
                 var relevantChange = false;
-                // Verifica se alguma das configurações relevantes (ID da timeline ou substituições de estilo) mudou
+                // Check if any relevant settings (timeline ID or style overrides) changed
                 for (var key in changedAttributes) {
                     if (key === 'selected_timeline_id' || key.startsWith('override_')) {
                         relevantChange = true;
                         break;
                     }
                 }
-                // Se uma configuração relevante mudou, atualiza a pré-visualização
+                // If a relevant setting changed, update the preview
                 if (relevantChange) {
                     debouncedFetchPreview();
                 }

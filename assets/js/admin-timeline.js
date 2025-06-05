@@ -1,10 +1,10 @@
 // assets/js/admin-timeline.js
 (function($) {
     $(document).ready(function() {
-        // Inicializa o WordPress Color Picker
+        // Initialize WordPress Color Picker
         $('.wtp-color-picker').wpColorPicker();
 
-        // Inicializa o Select2 para seleção de fontes
+        // Initialize Select2 for font selection
         if (typeof $.fn.select2 === 'function') {
             $('.wtp-select2-font').select2({
                 width: '100%',
@@ -24,12 +24,12 @@
                 }
             });
         } else {
-            console.warn('WP Timeline Pro: Select2 não está carregado.');
+            console.warn('WP Timeline Pro: Select2 is not loaded.');
         }
 
-        // Mostrar/Esconder condicionalmente a cor de fundo do card
+        // Conditionally show/hide the card background color
         var $noCardCheckbox = $('#wtp_no_card_format');
-        var $cardBgSettingRow = $('tr.wtp-card-bg-setting'); // O <tr> que contém o campo de cor de fundo
+        var $cardBgSettingRow = $('tr.wtp-card-bg-setting'); // The <tr> containing the background color field
 
         function toggleCardBgSetting() {
             if ($noCardCheckbox.is(':checked')) {
@@ -39,22 +39,24 @@
             }
         }
         if ($noCardCheckbox.length) {
-            toggleCardBgSetting(); // Executa na carga da página
-            $noCardCheckbox.on('change', toggleCardBgSetting); // Executa na mudança
+            toggleCardBgSetting(); // Execute on page load
+            $noCardCheckbox.on('change', toggleCardBgSetting); // Execute on change
         }
 
 
-        // Manipulador para adicionar novo item via AJAX
+        // Handler to add new item via AJAX
         $('#wtp-add-new-item-button').on('click', function() {
             var $button = $(this);
             var $spinner = $button.siblings('.spinner');
             var timelineId = $button.data('timeline-id');
             var year = $('#wtp_new_item_year').val();
-            // O campo de título foi removido do formulário AJAX, então o enviaremos como vazio.
-            // O título real será definido ao editar o item.
-            var title = ""; // Título é agora opcional e não coletado deste formulário
             var description = $('#wtp_new_item_description').val();
             var nonce = $('#wtp_timeline_items_manager_nonce').val();
+var itemTitle = $('#wtp_new_item_title').val().trim();
+            if (!itemTitle) {
+                alert(wtp_admin_vars.i18n.title_required || 'Item title is required.');
+                return;
+            }
 
             $spinner.addClass('is-active');
             $button.prop('disabled', true);
@@ -67,13 +69,14 @@
                     nonce: nonce,
                     timeline_id: timelineId,
                     year: year,
-                    title: title, // Envia vazio; o título será gerenciado na edição do item CPT
+                    title: itemTitle,
                     description: description
                 },
                 success: function(response) {
                     if (response.success) {
                         $('#wtp-timeline-items-list-container').html(response.data.items_html);
                         $('#wtp_new_item_year').val('');
+                        $('#wtp_new_item_title').val('');
                         $('#wtp_new_item_description').val('');
                     } else {
                         var errorMessage = wtp_admin_vars.i18n.error_adding_item;
@@ -93,7 +96,7 @@
             });
         });
 
-        // Manipulador para excluir item via AJAX
+        // Handler to delete item via AJAX
         $('#wtp-timeline-items-list-container').on('click', '.wtp-delete-item-button', function() {
             var $button = $(this);
             var itemId = $button.data('item-id');
@@ -133,7 +136,7 @@
             });
         });
 
-        // Lógica para pré-selecionar a timeline pai (se aplicável ao editar item CPT diretamente)
+        // Logic to pre-select parent timeline (if applicable when editing CPT item directly)
         const urlParams = new URLSearchParams(window.location.search);
         const parentTimelineIdFromUrl = urlParams.get('wtp_parent_id');
         const parentTimelineSelect = $('#wtp_parent_timeline_id'); // No CPT item edit screen
@@ -145,4 +148,4 @@
         }
     });
 })(jQuery);
-// Fim do arquivo assets/js/admin-timeline.js
+// End of file assets/js/admin-timeline.js

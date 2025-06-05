@@ -17,7 +17,7 @@
                 rect.left >= 0 &&
                 rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
                 rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-            ) || ( // Parte do elemento está visível
+            ) || ( // Part of the element is visible
                 rect.top < (window.innerHeight || document.documentElement.clientHeight) &&
                 rect.bottom > 0
             );
@@ -31,14 +31,14 @@
                     if (animationClass && animationClass !== 'none') {
                         $item.addClass('wtp-item-visible ' + animationClass).addClass('wtp-item-animated');
                     } else {
-                        // Se a animação for 'none' ou não definida, apenas marca como animado para não verificar novamente
+                        // If animation is 'none' or undefined, just mark as animated to not check again
                         $item.addClass('wtp-item-animated');
                     }
                 }
             });
         }
 
-        // Verifica animações ao carregar e ao rolar a página
+        // Check animations on load and on page scroll
         checkAnimations();
         $(window).on('scroll resize', checkAnimations);
 

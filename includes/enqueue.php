@@ -1,11 +1,11 @@
 <?php
-// Se este arquivo for chamado diretamente, aborte.
+// If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Enfileira scripts e estilos para o admin.
+ * Enqueue scripts and styles for the admin.
  */
 function wtp_admin_enqueue_scripts_styles( $hook_suffix ) {
 	$screen = get_current_screen();
@@ -36,24 +36,24 @@ function wtp_admin_enqueue_scripts_styles( $hook_suffix ) {
 
         $admin_vars = array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'nonce'    => wp_create_nonce( 'wtp_admin_ajax_nonce' ),
+            'nonce'    => wp_create_nonce( 'wtp_admin_ajax_nonce' ), // This nonce might be general or for other features
             'i18n'     => array(
-                'confirm_delete_item' => __( 'Tem certeza que deseja excluir este item da timeline? Esta ação não pode ser desfeita diretamente aqui.', 'wp-timeline-pro' ),
-                'error_adding_item'   => __( 'Erro ao adicionar o item', 'wp-timeline-pro' ),
-                'error_deleting_item' => __( 'Erro ao excluir o item', 'wp-timeline-pro' ),
-                'ajax_error'          => __( 'Erro na requisição AJAX', 'wp-timeline-pro' ),
-                'title_required'      => __( 'O título do item é obrigatório.', 'wp-timeline-pro' ),
+                'confirm_delete_item' => __( 'Are you sure you want to delete this timeline item? This action cannot be undone directly here.', 'wp-timeline-pro' ),
+                'error_adding_item'   => __( 'Error adding item', 'wp-timeline-pro' ),
+                'error_deleting_item' => __( 'Error deleting item', 'wp-timeline-pro' ),
+                'ajax_error'          => __( 'AJAX request error', 'wp-timeline-pro' ),
+                'title_required'      => __( 'Item title is required.', 'wp-timeline-pro' ),
             ),
         );
         wp_localize_script( 'wtp-admin-script', 'wtp_admin_vars', $admin_vars );
 	}
 
-    // Enfileirar scripts para o editor do Elementor
+    // Enqueue scripts for the Elementor editor
     if ( isset( $_GET['action'] ) && $_GET['action'] === 'elementor' ) {
         wp_enqueue_script(
             'wtp-elementor-preview-script',
             WTP_PLUGIN_URL . 'assets/js/elementor-preview.js',
-            [ 'jquery', 'elementor-frontend' ], // Depende do frontend do Elementor
+            [ 'jquery', 'elementor-frontend' ], // Depends on Elementor frontend
             WTP_VERSION,
             true
         );
@@ -64,21 +64,21 @@ function wtp_admin_enqueue_scripts_styles( $hook_suffix ) {
                 'ajax_url' => admin_url( 'admin-ajax.php' ),
                 'nonce'    => wp_create_nonce( 'wtp_elementor_preview_nonce' ),
                 'i18n'     => [
-                    'select_timeline'       => __( 'Por favor, selecione uma timeline.', 'wp-timeline-pro' ),
-                    'loading_preview'       => __( 'Carregando pré-visualização...', 'wp-timeline-pro' ),
-                    'error_loading_preview' => __( 'Erro ao carregar pré-visualização.', 'wp-timeline-pro' ),
-                    'ajax_error'            => __( 'Erro na requisição AJAX', 'wp-timeline-pro' ),
+                    'select_timeline'       => __( 'Please select a timeline.', 'wp-timeline-pro' ),
+                    'loading_preview'       => __( 'Loading preview...', 'wp-timeline-pro' ),
+                    'error_loading_preview' => __( 'Error loading preview.', 'wp-timeline-pro' ),
+                    'ajax_error'            => __( 'AJAX request error', 'wp-timeline-pro' ),
                 ],
             ]
         );
     }
 }
 add_action( 'admin_enqueue_scripts', 'wtp_admin_enqueue_scripts_styles' );
-// Para scripts do editor Elementor, o hook 'elementor/editor/after_enqueue_scripts' também é uma opção,
-// mas 'admin_enqueue_scripts' com a verificação de $_GET['action'] === 'elementor' é comum.
+// For Elementor editor scripts, the 'elementor/editor/after_enqueue_scripts' hook is also an option,
+// but 'admin_enqueue_scripts' with the check for $_GET['action'] === 'elementor' is common.
 
 /**
- * Enfileira estilos e fontes para o front-end.
+ * Enqueue styles and fonts for the front-end.
  */
 function wtp_frontend_enqueue_styles() {
     global $post;
@@ -88,11 +88,11 @@ function wtp_frontend_enqueue_styles() {
         $load_assets = true;
     }
 
-    // Se estiver no modo de pré-visualização do Elementor, carregue os assets
+    // If in Elementor preview mode, load assets
     if ( class_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->preview->is_preview_mode() ) {
-        // Verifique se o widget está na página (isto é mais complexo e pode não ser necessário
-        // se o CSS for bem isolado e não muito pesado)
-        // Por agora, vamos assumir que se estivermos no preview, podemos carregar.
+        // Check if the widget is on the page (this is more complex and may not be necessary
+        // if the CSS is well isolated and not too heavy)
+        // For now, let's assume we can load if in preview.
         $load_assets = true;
     }
 
@@ -117,52 +117,41 @@ function wtp_frontend_enqueue_styles() {
 add_action( 'wp_enqueue_scripts', 'wtp_frontend_enqueue_styles' );
 
 /**
- * Adiciona Google Fonts selecionadas ao cabeçalho do front-end.
+ * Enqueues a selected Google Font if it's determined to be a Google Font.
+ *
+ * @param string $font_family_css_string The font-family CSS string (e.g., '"Roboto", sans-serif').
  */
 function wtp_enqueue_selected_google_font( $font_family_css_string ) {
     if ( empty( $font_family_css_string ) || $font_family_css_string === 'inherit' ) {
         return;
     }
+
+    // Extract the primary font name from the CSS string (e.g., "Roboto" from ""Roboto", sans-serif")
     $font_name = explode( ',', $font_family_css_string )[0];
-    $font_name = trim( $font_name, '"\'' );
+    $font_name = trim( $font_name, '"\' ' ); // Trim quotes and leading/trailing spaces
 
-    $system_fonts = array('Arial', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Times New Roman', 'Georgia', 'Garamond', 'Courier New', 'Brush Script MT');
-    $is_google_font_candidate = true; // Assume que é, a menos que seja explicitamente de sistema
-
-    foreach($system_fonts as $sf) {
-        if (stripos($font_family_css_string, $sf) !== false) {
-            $is_google_font_candidate = false;
-            break;
-        }
-    }
-    // Se for uma família genérica, também não é Google Font
-    if (stripos($font_family_css_string, 'sans-serif') !== false && count(explode(',', $font_family_css_string)) === 1) $is_google_font_candidate = false;
-    if (stripos($font_family_css_string, 'serif') !== false && count(explode(',', $font_family_css_string)) === 1) $is_google_font_candidate = false;
-    if (stripos($font_family_css_string, 'monospace') !== false && count(explode(',', $font_family_css_string)) === 1) $is_google_font_candidate = false;
-
-
-    if (!$is_google_font_candidate) {
-        // Verifica se, apesar de ser de sistema, está na nossa lista de Google Fonts (ex: Roboto listado mas já presente)
-        // Esta lógica pode ser simplificada se assumirmos que as fontes da lista que não são de sistema SÃO Google Fonts.
-        $google_fonts_list = wtp_get_google_fonts_list(); // Função de admin-metaboxes.php
-         if (function_exists('wtp_get_google_fonts_list')) {
-            $google_fonts_list = wtp_get_google_fonts_list();
-            $is_actually_google_font = false;
-            foreach($google_fonts_list as $g_name => $g_css) {
-                if ($g_css === $font_family_css_string && !in_array($g_name, $system_fonts)) {
-                     $font_name = $g_name;
-                     $is_actually_google_font = true;
-                     break;
-                }
-            }
-            if (!$is_actually_google_font) return;
-        } else {
-            return; // Se a função não existir, não podemos verificar
-        }
+    // Basic check against generic CSS fallbacks and common system fonts - these should not be enqueued as Google Fonts.
+    // Added common system fonts to this list for robustness.
+    $generic_fallbacks = ['serif', 'sans-serif', 'monospace', 'cursive', 'fantasy', 'system-ui', 'arial', 'helvetica', 'verdana', 'tahoma', 'geneva', 'times new roman', 'georgia', 'garamond', 'courier new', 'brush script mt'];
+    if (in_array(strtolower($font_name), $generic_fallbacks, true)) {
+        return;
     }
 
+    // If, after trimming, the font name is empty (e.g., if the input was just "" or " "), don't proceed.
+    if (empty($font_name)) {
+        return;
+    }
 
+    // Construct the Google Fonts URL with common weights and display=swap.
+    // Future improvement: Allow selection/filtering of weights.
     $font_url = 'https://fonts.googleapis.com/css?family=' . urlencode( $font_name ) . ':400,700&display=swap';
-    wp_enqueue_style( 'wtp-google-font-' . sanitize_title( $font_name ), $font_url, array(), null );
+
+    // Use a sanitized version of the font name for the handle to ensure validity.
+    $handle = 'wtp-google-font-' . sanitize_title( $font_name );
+
+    // Only enqueue if not already enqueued (WordPress handles this, but it's a good check)
+    if ( ! wp_style_is( $handle, 'enqueued' ) ) {
+        wp_enqueue_style( $handle, $font_url, array(), null );
+    }
 }
 ?>
