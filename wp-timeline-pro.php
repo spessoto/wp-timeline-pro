@@ -3,7 +3,7 @@
  * Plugin Name: WP Timeline Pro
  * Plugin URI:  https://example.com/wp-timeline-pro
  * Description: Creates custom, feature-rich timelines with shortcodes for WordPress. Includes options for customizing fonts, colors, animations, item management, and an Elementor widget.
- * Version:     1.2.0
+ * Version:     1.3.0
  * Author:      Your Name Here
  * Author URI:  https://example.com
  * License:     GPLv2 or later
@@ -18,7 +18,7 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 // Define plugin constants
-define( 'WTP_VERSION', '1.2.0' ); // Updated version
+define( 'WTP_VERSION', '1.3.0' ); // Updated version
 define( 'WTP_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WTP_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 

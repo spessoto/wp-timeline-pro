@@ -36,7 +36,7 @@ function wtp_admin_enqueue_scripts_styles( $hook_suffix ) {
 
         $admin_vars = array(
             'ajax_url' => admin_url( 'admin-ajax.php' ),
-            'nonce'    => wp_create_nonce( 'wtp_admin_ajax_nonce' ), // This nonce might be general or for other features
+            // 'nonce'    => wp_create_nonce( 'wtp_admin_ajax_nonce' ), // This nonce is unused
             'i18n'     => array(
                 'confirm_delete_item' => __( 'Are you sure you want to delete this timeline item? This action cannot be undone directly here.', 'wp-timeline-pro' ),
                 'error_adding_item'   => __( 'Error adding item', 'wp-timeline-pro' ),

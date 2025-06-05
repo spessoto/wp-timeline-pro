@@ -15,7 +15,7 @@ function wtp_ajax_add_timeline_item_callback() {
     // Get and sanitize POST data
     $timeline_id = isset( $_POST['timeline_id'] ) ? absint( $_POST['timeline_id'] ) : 0;
     $item_year   = isset( $_POST['year'] ) ? sanitize_text_field( $_POST['year'] ) : '';
-    $item_title  = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : '';
+    $item_title  = isset( $_POST['title'] ) ? sanitize_text_field( $_POST['title'] ) : ''; // Will be empty from quick-add form
     $item_desc   = isset( $_POST['description'] ) ? wp_kses_post( $_POST['description'] ) : ''; // Allows safe HTML
 
     // Validate timeline ID first
@@ -30,14 +30,12 @@ function wtp_ajax_add_timeline_item_callback() {
         return;
     }
 
-    if ( empty( $item_title ) ) { // Title is now checked after permission
-        wp_send_json_error( array( 'message' => __( 'Item Title is required.', 'wp-timeline-pro' ) ) );
-        return;
-    }
+    // Title is no longer strictly required from this AJAX form, an empty title is acceptable for wp_insert_post.
+    // The JS part (Subtask 3) was modified to send title: '' when the title field was removed from quick-add form (Subtask 4).
 
     // Create the new timeline item post
     $new_item_args = array(
-        'post_title'   => $item_title,
+        'post_title'   => $item_title, // If empty, WordPress handles it (e.g., "(no title)")
         'post_content' => $item_desc,
         'post_status'  => 'publish', // Publish immediately
         'post_type'    => 'wtp_timeline_item',
@@ -84,7 +82,7 @@ function wtp_ajax_add_timeline_item_callback() {
     $items_html = ob_get_clean();
 
     wp_send_json_success( array(
-        'message' => __( 'Item added successfully!', 'wp-timeline-pro' ),
+        'message' => __( 'Item added successfully! You can edit it to add a title.', 'wp-timeline-pro' ), // Updated message
         'items_html' => $items_html
     ) );
 

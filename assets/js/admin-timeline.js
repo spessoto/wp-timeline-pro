@@ -52,11 +52,6 @@
             var year = $('#wtp_new_item_year').val();
             var description = $('#wtp_new_item_description').val();
             var nonce = $('#wtp_timeline_items_manager_nonce').val();
-var itemTitle = $('#wtp_new_item_title').val().trim();
-            if (!itemTitle) {
-                alert(wtp_admin_vars.i18n.title_required || 'Item title is required.');
-                return;
-            }
 
             $spinner.addClass('is-active');
             $button.prop('disabled', true);
@@ -69,14 +64,13 @@ var itemTitle = $('#wtp_new_item_title').val().trim();
                     nonce: nonce,
                     timeline_id: timelineId,
                     year: year,
-                    title: itemTitle,
+                    title: '', // Title field removed from form
                     description: description
                 },
                 success: function(response) {
                     if (response.success) {
                         $('#wtp-timeline-items-list-container').html(response.data.items_html);
                         $('#wtp_new_item_year').val('');
-                        $('#wtp_new_item_title').val('');
                         $('#wtp_new_item_description').val('');
                     } else {
                         var errorMessage = wtp_admin_vars.i18n.error_adding_item;
@@ -104,7 +98,6 @@ var itemTitle = $('#wtp_new_item_title').val().trim();
             var $listItem = $button.closest('li');
 
             if (!confirm(wtp_admin_vars.i18n.confirm_delete_item)) {
-                return;
             }
             $button.prop('disabled', true);
             $listItem.css('opacity', '0.5');

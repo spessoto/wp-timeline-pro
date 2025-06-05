@@ -283,10 +283,6 @@ function wtp_timeline_items_manager_metabox_callback( $post ) {
                 <td><input type="text" id="wtp_new_item_year" name="wtp_new_item_year" class="regular-text" placeholder="<?php esc_attr_e( 'E.g., 2024', 'wp-timeline-pro' ); ?>"/></td>
             </tr>
             <tr>
-                <th><label for="wtp_new_item_title"><?php _e( 'Item Title:', 'wp-timeline-pro' ); ?></label></th>
-                <td><input type="text" id="wtp_new_item_title" name="wtp_new_item_title" class="widefat" required /></td>
-            </tr>
-            <tr>
                 <th><label for="wtp_new_item_description"><?php _e( 'Description:', 'wp-timeline-pro' ); ?></label></th>
                 <td><textarea id="wtp_new_item_description" name="wtp_new_item_description" rows="5" class="widefat"></textarea></td>
             </tr>
@@ -301,7 +297,7 @@ function wtp_timeline_items_manager_metabox_callback( $post ) {
             </tr>
         </tbody>
     </table>
-    <p><small><?php _e( 'Items are ordered by the "Order" field. You can edit the order of each item by clicking "Edit".', 'wp-timeline-pro' ); ?></small></p>
+    <p><small><?php _e( 'Items are ordered by the "Order" field. You can edit the order of each item by clicking "Edit". The title for new items will be set on the item\'s dedicated edit screen.', 'wp-timeline-pro' ); ?></small></p>
     <?php
 }
 
@@ -504,3 +500,5 @@ function wtp_get_font_weights() {
     ));
 }
 ?>
+
+[end of includes/admin-metaboxes.php]

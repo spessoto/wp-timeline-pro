@@ -103,7 +103,7 @@
                     widgetView = elementorFrontend.elements.views.findByModelCID($scope.data('model-cid'));
                 }
             }
-            
+
             // If the widget view cannot be obtained, log a warning and try an initial load with a mock
             if (!widgetView) {
                 console.warn('WP Timeline Pro: Could not get widget view for AJAX preview.', $scope);
@@ -117,33 +117,77 @@
                     };
                     WtpElementorPreview.fetchPreview(mockView);
                 }
-                return;
+                // Even if widgetView is not found for preview, the edit button listener should still be attached if possible.
+                // However, getting selected_timeline_id will be an issue without the model.
+                // The event listener for 'wtp:editTimeline' relies on the control view, not the widget view.
             }
 
             // Create a debounced function to fetch the preview, limiting excessive calls
-            var debouncedFetchPreview = WtpElementorPreview.debounce(function() {
-                WtpElementorPreview.fetchPreview(widgetView);
-            }, 500); // 500ms delay
+            // This part is for the live preview rendering
+            if (widgetView) { // Only set up preview rendering if we have a valid widgetView
+                var debouncedFetchPreview = WtpElementorPreview.debounce(function() {
+                    WtpElementorPreview.fetchPreview(widgetView);
+                }, 500); // 500ms delay
 
-            // Render the preview on initial widget load
-            debouncedFetchPreview();
+                // Render the preview on initial widget load
+                debouncedFetchPreview();
 
-            // Listen for changes in the widget model's settings
-            widgetView.model.on('change', function(model) {
-                var changedAttributes = model.changedAttributes();
-                var relevantChange = false;
-                // Check if any relevant settings (timeline ID or style overrides) changed
-                for (var key in changedAttributes) {
-                    if (key === 'selected_timeline_id' || key.startsWith('override_')) {
-                        relevantChange = true;
-                        break;
+                // Listen for changes in the widget model's settings
+                widgetView.model.on('change', function(model) {
+                    var changedAttributes = model.changedAttributes();
+                    var relevantChange = false;
+                    // Check if any relevant settings (timeline ID or style overrides) changed
+                    for (var key in changedAttributes) {
+                        if (key === 'selected_timeline_id' || key.startsWith('override_')) {
+                            relevantChange = true;
+                            break;
+                        }
                     }
-                }
-                // If a relevant setting changed, update the preview
-                if (relevantChange) {
-                    debouncedFetchPreview();
-                }
-            });
+                    // If a relevant setting changed, update the preview
+                    if (relevantChange) {
+                        debouncedFetchPreview();
+                    }
+                });
+            }
+
+            // Add listener for the custom event from the panel button 'wtp:editTimeline'
+            // This listener is independent of the widgetView for preview, it's for the panel button.
+            if (window.elementor && window.elementor.channels && window.elementor.channels.editor) {
+                elementor.channels.editor.on('wtp:editTimeline', function(controlView, widgetViewContext) {
+                    // The widgetViewContext is the actual widget view instance passed from the button click handler
+                    // (assuming the event is triggered with context: elementor.channels.editor.trigger('wtp:editTimeline', this, this.elementEditorView); )
+                    // Or, more reliably, the controlView itself can give us access to the model.
+                    var currentWidgetModel;
+                    if (controlView && controlView.model) { // If controlView has model (newer Elementor versions)
+                        currentWidgetModel = controlView.model;
+                    } else if (widgetView) { // Fallback to the widgetView obtained for preview if controlView doesn't have model
+                        currentWidgetModel = widgetView.model;
+                    }
+
+                    if (currentWidgetModel && typeof currentWidgetModel.get === 'function' && currentWidgetModel.get('settings') && typeof currentWidgetModel.get('settings').get === 'function') {
+                        var selectedTimelineId = currentWidgetModel.get('settings').get('selected_timeline_id');
+
+                        if (selectedTimelineId) {
+                            var adminBaseUrl = wtp_elementor_preview_vars.ajax_url.replace('admin-ajax.php', '');
+                            var editUrl = adminBaseUrl + 'post.php?post=' + selectedTimelineId + '&action=edit';
+                            window.open(editUrl, '_blank'); // Open in a new tab
+                        } else {
+                            alert(wtp_elementor_preview_vars.i18n.select_timeline || 'Please select a timeline first.');
+                        }
+                    } else {
+                         console.warn('WP Timeline Pro: Could not determine widget model for edit button.');
+                         // Attempt to get selected_timeline_id directly from the $scope if model is unavailable
+                         var timelineIdFromScope = $scope.find('select[data-setting="selected_timeline_id"]').val();
+                         if(timelineIdFromScope){
+                            var adminBaseUrl = wtp_elementor_preview_vars.ajax_url.replace('admin-ajax.php', '');
+                            var editUrl = adminBaseUrl + 'post.php?post=' + timelineIdFromScope + '&action=edit';
+                            window.open(editUrl, '_blank');
+                         } else {
+                            alert(wtp_elementor_preview_vars.i18n.select_timeline || 'Please select a timeline first.');
+                         }
+                    }
+                });
+            }
         });
     });
 
