@@ -2,7 +2,7 @@
 /**
  * Plugin Name: WP Timeline Pro
  * Plugin URI:  https://example.com/wp-timeline-pro
- * Description: Creates custom, feature-rich timelines with shortcodes for WordPress. Includes options for customizing fonts, colors, animations, item management, and an Elementor widget.
+ * Description: Creates custom, feature-rich timelines with shortcodes for WordPress. Includes options for customizing fonts, colors, animations, and item management.
  * Version:     1.3.0
  * Author:      Your Name Here
  * Author URI:  https://example.com
@@ -29,21 +29,7 @@ require_once WTP_PLUGIN_DIR . 'includes/shortcodes.php';
 require_once WTP_PLUGIN_DIR . 'includes/enqueue.php';
 require_once WTP_PLUGIN_DIR . 'includes/ajax-handlers.php';
 
-/**
- * Function to register the Elementor widget.
- */
-function wtp_register_elementor_widget( $widgets_manager ) {
-    // Check if Elementor is active
-	if ( ! did_action( 'elementor/loaded' ) ) {
-		return;
-	}
-
-	require_once WTP_PLUGIN_DIR . 'includes/elementor-widget.php';
-	$widgets_manager->register( new \WTP_Timeline_Elementor_Widget() );
-}
-add_action( 'elementor/widgets/register', 'wtp_register_elementor_widget' ); // Correct hook for Elementor 3.5+
-// For older versions of Elementor, the hook was 'elementor/widgets/widgets_registered'.
-// 'elementor/widgets/register' is the most current.
+// Elementor widget registration and related functions have been removed.
 
 /**
  * Function to run on plugin activation.
@@ -81,24 +67,6 @@ function wtp_add_settings_link( $links ) {
 }
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'wtp_add_settings_link' );
 
-/**
- * Checks if Elementor is active and displays a notice if it is not.
- * This is useful if the widget is a central part of the plugin.
- */
-function wtp_check_elementor_active() {
-    if ( ! did_action( 'elementor/loaded' ) ) {
-        add_action( 'admin_notices', function() {
-            ?>
-            <div class="notice notice-warning is-dismissible">
-                <p><?php _e( 'WP Timeline Pro plugin requires Elementor to function correctly with its widget. Please install and activate Elementor.', 'wp-timeline-pro' ); ?></p>
-            </div>
-            <?php
-        });
-    }
-}
-// We could call wtp_check_elementor_active() on 'admin_init', but since the widget is only registered
-// if Elementor is loaded, the notice may not be strictly necessary unless
-// other functionalities critically depend on Elementor.
-// For now, conditional widget registration is sufficient.
+// Elementor check function (wtp_check_elementor_active) has been removed.
 
 ?>

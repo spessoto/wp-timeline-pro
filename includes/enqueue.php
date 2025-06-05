@@ -47,34 +47,9 @@ function wtp_admin_enqueue_scripts_styles( $hook_suffix ) {
         wp_localize_script( 'wtp-admin-script', 'wtp_admin_vars', $admin_vars );
 	}
 
-    // Enqueue scripts for the Elementor editor
-    if ( isset( $_GET['action'] ) && $_GET['action'] === 'elementor' ) {
-        wp_enqueue_script(
-            'wtp-elementor-preview-script',
-            WTP_PLUGIN_URL . 'assets/js/elementor-preview.js',
-            [ 'jquery', 'elementor-frontend' ], // Depends on Elementor frontend
-            WTP_VERSION,
-            true
-        );
-        wp_localize_script(
-            'wtp-elementor-preview-script',
-            'wtp_elementor_preview_vars',
-            [
-                'ajax_url' => admin_url( 'admin-ajax.php' ),
-                'nonce'    => wp_create_nonce( 'wtp_elementor_preview_nonce' ),
-                'i18n'     => [
-                    'select_timeline'       => __( 'Please select a timeline.', 'wp-timeline-pro' ),
-                    'loading_preview'       => __( 'Loading preview...', 'wp-timeline-pro' ),
-                    'error_loading_preview' => __( 'Error loading preview.', 'wp-timeline-pro' ),
-                    'ajax_error'            => __( 'AJAX request error', 'wp-timeline-pro' ),
-                ],
-            ]
-        );
-    }
+    // Elementor editor script enqueue block removed.
 }
 add_action( 'admin_enqueue_scripts', 'wtp_admin_enqueue_scripts_styles' );
-// For Elementor editor scripts, the 'elementor/editor/after_enqueue_scripts' hook is also an option,
-// but 'admin_enqueue_scripts' with the check for $_GET['action'] === 'elementor' is common.
 
 /**
  * Enqueue styles and fonts for the front-end.
@@ -87,14 +62,7 @@ function wtp_frontend_enqueue_styles() {
         $load_assets = true;
     }
 
-    // If in Elementor preview mode, load assets
-    if ( class_exists( '\Elementor\Plugin' ) && \Elementor\Plugin::$instance->preview->is_preview_mode() ) {
-        // Check if the widget is on the page (this is more complex and may not be necessary
-        // if the CSS is well isolated and not too heavy)
-        // For now, let's assume we can load if in preview.
-        $load_assets = true;
-    }
-
+    // Elementor preview mode check removed.
 
     if ( $load_assets || apply_filters('wtp_force_load_frontend_assets', false) ) {
         wp_enqueue_style(

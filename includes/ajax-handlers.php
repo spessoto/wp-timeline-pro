@@ -170,66 +170,6 @@ function wtp_ajax_get_timeline_items_list_callback() {
     wp_die();
 }
 
-/**
- * AJAX handler to render the timeline preview for Elementor.
- */
-add_action( 'wp_ajax_wtp_get_elementor_preview', 'wtp_ajax_get_elementor_preview_callback' );
-function wtp_ajax_get_elementor_preview_callback() {
-    // Verify nonce for security
-    check_ajax_referer( 'wtp_elementor_preview_nonce', 'nonce' );
-
-    $timeline_id = isset( $_POST['timeline_id'] ) ? absint( $_POST['timeline_id'] ) : 0;
-
-    if ( ! $timeline_id ) { // Check if timeline_id is valid before permission check
-        wp_send_json_error( array( 'message' => __( 'Timeline ID not provided.', 'wp-timeline-pro' ) ) );
-        return;
-    }
-
-    // Check user permissions for the specific timeline
-    if ( ! current_user_can( 'edit_post', $timeline_id ) ) {
-        wp_send_json_error( array( 'message' => __( 'You do not have permission to preview this timeline.', 'wp-timeline-pro' ) ) );
-        return;
-    }
-
-    // Elementor settings are sent as a JSON string.
-    // JavaScript already filters to send only relevant settings (override_*).
-    $elementor_settings_json = isset( $_POST['elementor_settings'] ) ? stripslashes( $_POST['elementor_settings'] ) : '{}';
-    $elementor_settings = json_decode( $elementor_settings_json, true );
-
-    // Build style overrides array from received Elementor settings
-    $style_overrides = [];
-    // Keys in $elementor_settings should already be override keys (e.g., 'override_line_color')
-    // The wtp_render_timeline_shortcode function expects keys without the 'override_' prefix within the 'style_overrides' array.
-    if ( isset( $elementor_settings['override_line_color'] ) && !empty( $elementor_settings['override_line_color'] ) ) {
-        $style_overrides['line_color'] = $elementor_settings['override_line_color'];
-    }
-    if ( isset( $elementor_settings['override_item_bg_color'] ) && !empty( $elementor_settings['override_item_bg_color'] ) ) {
-        $style_overrides['item_bg_color'] = $elementor_settings['override_item_bg_color'];
-    }
-    if ( isset( $elementor_settings['override_text_color'] ) && !empty( $elementor_settings['override_text_color'] ) ) {
-        $style_overrides['text_color'] = $elementor_settings['override_text_color'];
-    }
-    if ( isset( $elementor_settings['override_title_text_color'] ) && !empty( $elementor_settings['override_title_text_color'] ) ) {
-        $style_overrides['title_text_color'] = $elementor_settings['override_title_text_color'];
-    }
-    if ( isset( $elementor_settings['override_year_text_color'] ) && !empty( $elementor_settings['override_year_text_color'] ) ) {
-        $style_overrides['year_text_color'] = $elementor_settings['override_year_text_color'];
-    }
-    // Add other overrides here if defined in the widget and sent by JS
-
-    // Calls the shortcode rendering function, which now accepts 'style_overrides'
-    if ( function_exists( 'wtp_render_timeline_shortcode' ) ) {
-        $timeline_html = wtp_render_timeline_shortcode( array(
-            'id' => $timeline_id,
-            'style_overrides' => $style_overrides,
-            // No need to pass 'elementor_settings' here, as we have already extracted the overrides
-        ) );
-        wp_send_json_success( array( 'html' => $timeline_html ) );
-    } else {
-        wp_send_json_error( array( 'message' => __( 'Timeline rendering function not found.', 'wp-timeline-pro' ) ) );
-    }
-
-    wp_die();
-}
+// Removed wtp_ajax_get_elementor_preview_callback function and its action hook.
 
 ?>
