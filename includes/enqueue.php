@@ -42,7 +42,6 @@ function wtp_admin_enqueue_scripts_styles( $hook_suffix ) {
                 'error_adding_item'   => __( 'Error adding item', 'wp-timeline-pro' ),
                 'error_deleting_item' => __( 'Error deleting item', 'wp-timeline-pro' ),
                 'ajax_error'          => __( 'AJAX request error', 'wp-timeline-pro' ),
-                'title_required'      => __( 'Item title is required.', 'wp-timeline-pro' ),
             ),
         );
         wp_localize_script( 'wtp-admin-script', 'wtp_admin_vars', $admin_vars );

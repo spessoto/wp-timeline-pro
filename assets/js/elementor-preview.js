@@ -66,7 +66,7 @@
                     if (response.success && response.data.html) {
                         $previewContainer.html(response.data.html);
                         // Trigger an event so other scripts (e.g., animations) can re-initialize
-                        $(document).trigger('wtpElementorPreviewRendered', [$previewContainer]);
+                        $(document).trigger('wtpTimelinePro:elementorPreviewRendered', [$previewContainer]);
 
                         // Try to force Elementor to recalculate the layout
                         if (typeof elementorFrontend !== 'undefined' && typeof elementorFrontend.elements !== 'undefined' && typeof elementorFrontend.elements.$window !== 'undefined') {
