@@ -100,10 +100,6 @@ function wtp_timeline_settings_metabox_callback( $post ) {
 	$year_font_size  = get_post_meta( $post->ID, '_wtp_year_font_size', true ); // Existing
 	$year_text_color = get_post_meta( $post->ID, '_wtp_year_text_color', true ); // Existing
 
-    // Meta for Title styles (existing, may or may not be used by the shortcode directly)
-	$title_font_size = get_post_meta( $post->ID, '_wtp_title_font_size', true );
-	$title_text_color= get_post_meta( $post->ID, '_wtp_title_text_color', true );
-
     // Meta for general timeline styles
 	$line_color      = get_post_meta( $post->ID, '_wtp_line_color', true );
     $marker_color    = get_post_meta( $post->ID, '_wtp_marker_color', true );
@@ -191,16 +187,6 @@ function wtp_timeline_settings_metabox_callback( $post ) {
             <tr>
                 <th><label for="wtp_year_text_color"><?php _e( 'Year Text Color:', 'wp-timeline-pro' ); ?></label></th>
                 <td><input type="text" id="wtp_year_text_color" name="wtp_year_text_color" value="<?php echo esc_attr( $year_text_color ); ?>" class="wtp-color-picker" data-default-color="#555555" /></td>
-            </tr>
-
-            <tr><td colspan="2"><h3><?php _e('Item Title Styles', 'wp-timeline-pro'); ?></h3></td></tr>
-            <tr>
-                <th><label for="wtp_title_font_size"><?php _e( 'Item Title Font Size (px):', 'wp-timeline-pro' ); ?></label></th>
-                <td><input type="number" id="wtp_title_font_size" name="wtp_title_font_size" value="<?php echo esc_attr( $title_font_size ); ?>" class="small-text" placeholder="16"/></td>
-            </tr>
-            <tr>
-                <th><label for="wtp_title_text_color"><?php _e( 'Item Title Text Color:', 'wp-timeline-pro' ); ?></label></th>
-                <td><input type="text" id="wtp_title_text_color" name="wtp_title_text_color" value="<?php echo esc_attr( $title_text_color ); ?>" class="wtp-color-picker" data-default-color="#222222" /></td>
             </tr>
 
             <tr><td colspan="2"><h3><?php _e('General Timeline Styles', 'wp-timeline-pro'); ?></h3></td></tr>
@@ -360,8 +346,8 @@ function wtp_save_timeline_settings_data( $post_id ) {
         'wtp_year_font_size'   => 'absint', // Existing
         'wtp_year_text_color'  => 'sanitize_hex_color', // Existing
         // Title Fields (Existentes)
-        'wtp_title_font_size'  => 'absint',
-        'wtp_title_text_color' => 'sanitize_hex_color',
+        // 'wtp_title_font_size'  => 'absint', // Removed from save logic
+        // 'wtp_title_text_color' => 'sanitize_hex_color', // Removed from save logic
         // General Style Fields (Existentes)
         'wtp_line_color'       => 'sanitize_hex_color',
         'wtp_marker_color'     => 'sanitize_hex_color',
@@ -393,6 +379,11 @@ function wtp_save_timeline_settings_data( $post_id ) {
              }
         }
     }
+
+    // Remove meta for fields that are no longer in UI (title specific styles from CPT settings)
+    delete_post_meta( $post_id, '_wtp_title_font_size' );
+    delete_post_meta( $post_id, '_wtp_title_text_color' );
+
 
     // Handle 'wtp_no_card_format' checkbox separately
     $meta_key_no_card = '_wtp_no_card_format';
@@ -500,5 +491,3 @@ function wtp_get_font_weights() {
     ));
 }
 ?>
-
-[end of includes/admin-metaboxes.php]
