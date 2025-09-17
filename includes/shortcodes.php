@@ -1,11 +1,11 @@
 <?php
-// Se este arquivo for chamado diretamente, aborte.
+// If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
 	die;
 }
 
 /**
- * Registra o shortcode [custom_timeline id="X"].
+ * Registers the [custom_timeline id="X"] shortcode.
  */
 function wtp_register_timeline_shortcode() {
 	add_shortcode( 'custom_timeline', 'wtp_render_timeline_shortcode' );
@@ -13,7 +13,7 @@ function wtp_register_timeline_shortcode() {
 add_action( 'init', 'wtp_register_timeline_shortcode' );
 
 /**
- * Renderiza o HTML da timeline.
+ * Renders the timeline HTML.
  */
 function wtp_render_timeline_shortcode( $atts ) {
 	$atts = shortcode_atts(
@@ -29,10 +29,10 @@ function wtp_render_timeline_shortcode( $atts ) {
     $style_overrides = (array) $atts['style_overrides'];
 
 	if ( ! $timeline_id || 'wtp_timeline' !== get_post_type( $timeline_id ) ) {
-		return current_user_can( 'edit_posts' ) ? '<p class="wtp-error">' . __( 'Erro: ID da Timeline inválido ou não fornecido.', 'wp-timeline-pro' ) . '</p>' : '';
+		return current_user_can( 'edit_posts' ) ? '<p class="wtp-error">' . __( 'Error: Invalid or missing Timeline ID.', 'wp-timeline-pro' ) . '</p>' : '';
 	}
 
-	// Configurações do CPT
+	// CPT Settings
 	$cpt_font_family_desc  = get_post_meta( $timeline_id, '_wtp_font_family_desc', true );
     $cpt_font_weight_desc  = get_post_meta( $timeline_id, '_wtp_font_weight_desc', true );
 	$cpt_font_size_desc    = get_post_meta( $timeline_id, '_wtp_font_size_desc', true );
@@ -40,12 +40,12 @@ function wtp_render_timeline_shortcode( $atts ) {
 
     $cpt_font_family_year  = get_post_meta( $timeline_id, '_wtp_font_family_year', true );
     $cpt_font_weight_year  = get_post_meta( $timeline_id, '_wtp_font_weight_year', true );
-	$cpt_font_size_year    = get_post_meta( $timeline_id, '_wtp_font_size_year', true );
+	$cpt_font_size_year    = get_post_meta( $timeline_id, '_wtp_year_font_size', true ); // Corrected to match meta key saved in admin
 	$cpt_text_color_year   = get_post_meta( $timeline_id, '_wtp_text_color_year', true );
 
-    // Estilos Título do Item foram removidos das configurações da timeline
-    // $cpt_title_font_size  = get_post_meta( $timeline_id, '_wtp_title_font_size', true ); // REMOVIDO
-    // $cpt_title_text_color = get_post_meta( $timeline_id, '_wtp_title_text_color', true ); // REMOVIDO
+    // Item Title styles were removed from timeline settings
+    // $cpt_title_font_size  = get_post_meta( $timeline_id, '_wtp_title_font_size', true ); // REMOVED
+    // $cpt_title_text_color = get_post_meta( $timeline_id, '_wtp_title_text_color', true ); // REMOVED
 
 	$cpt_line_color       = get_post_meta( $timeline_id, '_wtp_line_color', true );
     $cpt_marker_color     = get_post_meta( $timeline_id, '_wtp_marker_color', true );
@@ -54,9 +54,9 @@ function wtp_render_timeline_shortcode( $atts ) {
     $cpt_anim_left        = get_post_meta( $timeline_id, '_wtp_animation_style_left', true );
     $cpt_anim_right       = get_post_meta( $timeline_id, '_wtp_animation_style_right', true );
 
-    // Determina valores finais (CPT vs Overrides do Elementor)
+    // Determine final values (CPT vs Elementor Overrides)
     $final_font_family_desc  = !empty($style_overrides['font_family_desc']) ? $style_overrides['font_family_desc'] : $cpt_font_family_desc;
-    $final_font_weight_desc  = isset($style_overrides['font_weight_desc']) ? $style_overrides['font_weight_desc'] : $cpt_font_weight_desc; // isset para permitir '0' ou ''
+    $final_font_weight_desc  = isset($style_overrides['font_weight_desc']) ? $style_overrides['font_weight_desc'] : $cpt_font_weight_desc; // isset to allow '0' or ''
     $final_font_size_desc    = !empty($style_overrides['font_size_desc']) ? $style_overrides['font_size_desc'] : $cpt_font_size_desc;
     $final_text_color_desc   = !empty($style_overrides['text_color_desc']) ? $style_overrides['text_color_desc'] : $cpt_text_color_desc;
 
@@ -65,9 +65,9 @@ function wtp_render_timeline_shortcode( $atts ) {
     $final_font_size_year    = !empty($style_overrides['font_size_year']) ? $style_overrides['font_size_year'] : $cpt_font_size_year;
     $final_text_color_year   = !empty($style_overrides['text_color_year']) ? $style_overrides['text_color_year'] : $cpt_text_color_year;
 
-    // Título do Item não tem mais configurações globais de estilo, usará CSS padrão ou do tema.
-    // $final_title_font_size  = !empty($style_overrides['title_font_size']) ? $style_overrides['title_font_size'] : $cpt_title_font_size; // REMOVIDO
-    // $final_title_text_color = !empty($style_overrides['title_text_color']) ? $style_overrides['title_text_color'] : $cpt_title_text_color; // REMOVIDO
+    // Item Title no longer has global style settings, will use default or theme CSS.
+    // $final_title_font_size  = !empty($style_overrides['title_font_size']) ? $style_overrides['title_font_size'] : $cpt_title_font_size; // REMOVED
+    // $final_title_text_color = !empty($style_overrides['title_text_color']) ? $style_overrides['title_text_color'] : $cpt_title_text_color; // REMOVED
 
 
     $final_line_color       = !empty($style_overrides['line_color']) ? $style_overrides['line_color'] : $cpt_line_color;
@@ -78,7 +78,7 @@ function wtp_render_timeline_shortcode( $atts ) {
     $final_anim_right       = !empty($style_overrides['animation_right']) ? $style_overrides['animation_right'] : $cpt_anim_right;
 
 
-    // Enfileirar fontes do Google
+    // Enqueue Google Fonts
     if ( ! empty( $final_font_family_desc ) && function_exists('wtp_enqueue_selected_google_font') ) {
         wtp_enqueue_selected_google_font( $final_font_family_desc );
     }
@@ -87,7 +87,7 @@ function wtp_render_timeline_shortcode( $atts ) {
     }
 
 
-    // CSS Vars
+    // CSS Variables for inline styles
     $css_font_family_desc  = !empty($final_font_family_desc) ? esc_attr($final_font_family_desc) : 'inherit';
     $css_font_weight_desc  = !empty($final_font_weight_desc) ? esc_attr($final_font_weight_desc) : 'inherit';
     $css_font_size_desc    = !empty($final_font_size_desc) ? absint($final_font_size_desc) . 'px' : 'inherit';
@@ -95,7 +95,7 @@ function wtp_render_timeline_shortcode( $atts ) {
 
     $css_font_family_year  = !empty($final_font_family_year) ? esc_attr($final_font_family_year) : 'inherit';
     $css_font_weight_year  = !empty($final_font_weight_year) ? esc_attr($final_font_weight_year) : 'inherit';
-    $css_font_size_year    = !empty($final_font_size_year) ? absint($final_font_size_year) . 'px' : '1.3em'; // Padrão para ano
+    $css_font_size_year    = !empty($final_font_size_year) ? absint($final_font_size_year) . 'px' : '1.3em'; // Default for year
     $css_text_color_year   = !empty($final_text_color_year) ? sanitize_hex_color($final_text_color_year) : '#555555';
 
 
@@ -116,7 +116,7 @@ function wtp_render_timeline_shortcode( $atts ) {
 	$timeline_items_query = new WP_Query( $args_items );
 
 	if ( ! $timeline_items_query->have_posts() ) {
-		return current_user_can( 'edit_posts' ) ? '<p class="wtp-notice">' . __( 'Nenhum item encontrado para esta timeline.', 'wp-timeline-pro' ) . '</p>' : '';
+		return current_user_can( 'edit_posts' ) ? '<p class="wtp-notice">' . __( 'No items found for this timeline.', 'wp-timeline-pro' ) . '</p>' : '';
 	}
 
     $unique_timeline_id_attr = 'wtp-timeline-' . esc_attr( $timeline_id ) . '-' . uniqid();
@@ -149,7 +149,7 @@ function wtp_render_timeline_shortcode( $atts ) {
                 font-size: <?php echo $css_font_size_year; ?>;
                 color: <?php echo $css_text_color_year; ?>;
             }
-            /* Título do item não tem mais estilos globais, herdará ou será estilizado por CSS geral */
+            /* Item title no longer has global styles, will inherit or be styled by general CSS */
             #<?php echo $unique_timeline_id_attr; ?>.wtp-timeline-container .wtp-timeline-item-marker {
                 border-color: <?php echo $css_line_color; ?>;
                 background-color: <?php echo $css_marker_bg_color; ?>;
@@ -178,7 +178,7 @@ function wtp_render_timeline_shortcode( $atts ) {
 			while ( $timeline_items_query->have_posts() ) : $timeline_items_query->the_post();
 				$item_id    = get_the_ID();
 				$item_year  = get_post_meta( $item_id, '_wtp_item_year', true );
-                $item_title = get_the_title(); // O título é obtido do CPT
+                $item_title = get_the_title(); // Title is obtained from the CPT
 				$item_content = apply_filters('the_content', get_the_content());
 
 				$alignment_class = ( $item_count % 2 == 0 ) ? 'wtp-item-left' : 'wtp-item-right';
@@ -186,7 +186,7 @@ function wtp_render_timeline_shortcode( $atts ) {
                 $data_animation = !empty($current_item_animation) ? esc_attr($current_item_animation) : 'none';
 
                 $item_classes = ['wtp-timeline-item', $alignment_class];
-                // A classe wtp-item-no-card não é necessária aqui pois os estilos são aplicados via .wtp-timeline-container.wtp-no-card-format
+                // The wtp-item-no-card class is not necessary here as styles are applied via .wtp-timeline-container.wtp-no-card-format
                 // if ($is_no_card_format) { $item_classes[] = 'wtp-item-no-card'; }
 
 				?>

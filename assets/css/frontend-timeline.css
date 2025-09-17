@@ -99,24 +99,24 @@
 }
 .wtp-timeline-item-description p:last-child { margin-bottom: 0; }
 
-/* Setas dos balões (só se tiver card) */
-.wtp-timeline-item:not(.wtp-item-no-card).wtp-item-left .wtp-timeline-item-content-inner::after {
+/* Setas dos balões (só se tiver card) - Modificado */
+.wtp-timeline-container:not(.wtp-no-card-format) .wtp-timeline-item.wtp-item-left .wtp-timeline-item-content-inner::after {
     content: '';
     position: absolute;
     top: 20px;
     right: -10px;
     border-style: solid;
     border-width: 10px 0 10px 10px;
-    border-color: transparent transparent transparent #f9f9f9; /* Cor do fundo do card */
+    border-color: transparent transparent transparent #f9f9f9; /* Cor do fundo do card (padrão) */
 }
-.wtp-timeline-item:not(.wtp-item-no-card).wtp-item-right .wtp-timeline-item-content-inner::after {
+.wtp-timeline-container:not(.wtp-no-card-format) .wtp-timeline-item.wtp-item-right .wtp-timeline-item-content-inner::after {
     content: '';
     position: absolute;
     top: 20px;
     left: -10px;
     border-style: solid;
     border-width: 10px 10px 10px 0;
-    border-color: transparent #f9f9f9 transparent transparent; /* Cor do fundo do card */
+    border-color: transparent #f9f9f9 transparent transparent; /* Cor do fundo do card (padrão) */
 }
 
 /* Estilos para o modo "Sem Card" */
@@ -126,7 +126,7 @@
     box-shadow: none;
     border-radius: 0;
 }
-/* Esconder as setas no modo "sem card" já está coberto pela lógica acima que só adiciona ::after a :not(.wtp-item-no-card) */
+
 /* Se o item não tiver título, pode ser necessário ajustar margens */
 .wtp-timeline-item-title + .wtp-timeline-item-description {
     /* Mantém a margem padrão se o título existir */
@@ -160,13 +160,14 @@
     .wtp-timeline-item.wtp-item-left .wtp-timeline-item-marker,
     .wtp-timeline-item.wtp-item-right .wtp-timeline-item-marker { left: 9px; }
 
-    .wtp-timeline-item:not(.wtp-item-no-card).wtp-item-left .wtp-timeline-item-content-inner::after,
-    .wtp-timeline-item:not(.wtp-item-no-card).wtp-item-right .wtp-timeline-item-content-inner::after {
+    /* Setas responsivas - Modificado */
+    .wtp-timeline-container:not(.wtp-no-card-format) .wtp-timeline-item.wtp-item-left .wtp-timeline-item-content-inner::after,
+    .wtp-timeline-container:not(.wtp-no-card-format) .wtp-timeline-item.wtp-item-right .wtp-timeline-item-content-inner::after {
         left: -10px;
         right: auto;
         border-style: solid;
         border-width: 10px 10px 10px 0;
-        border-color: transparent #f9f9f9 transparent transparent;
+        border-color: transparent #f9f9f9 transparent transparent; /* Cor do fundo do card (padrão) */
     }
 }
 

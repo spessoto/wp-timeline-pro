@@ -1,0 +1,4 @@
+# This is a placeholder file to ensure the 'languages' directory is created.
+# WordPress uses this directory to load .mo and .po translation files.
+# Text Domain: wp-timeline-pro
+# Domain Path: /languages
